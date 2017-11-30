@@ -1,6 +1,6 @@
 # ADC Final Project Fall 2017
 
-##USRP setup instructions
+## USRP setup instructions
 
 Make sure gnu-radio is installed:
 ```
