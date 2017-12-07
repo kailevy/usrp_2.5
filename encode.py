@@ -1,15 +1,23 @@
 import numpy as np
+# import matplotlib.pyplot as plt
 
-def encode(arr1, arr2, fname):
-    np.savetxt(fname, np.column_stack([
-        arr1.view(float).reshape(-1, 2),
-        arr2.view(float).reshape(-1, 2),
-    ]))
+def encode(sig, fname):
+    tmp = np.zeros(2*len(sig), dtype='float32')
+    tmp[::2] = np.real(sig)
+    tmp[1::2] = np.imag(sig)
+    tmp.tofile(fname)
 
 
 if __name__ == '__main__':
     fname = 'send.dat'
-    tmp = np.append(np.repeat(1, 1000), np.zeros(1000))
-    arr1 = np.repeat(tmp, 6)
-    arr2 = np.zeros(len(arr1))
-    encode(arr1, arr2, fname)
+    # Send ascii 'a' 0b01100001 and '!' 0b00100001
+    # not really but 0b01110001 and 0b00100101
+    pp = np.repeat(1+1j, 100)
+    mm = np.repeat(-1-1j, 100)
+    pm = np.repeat(1-1j, 100)
+    mp = np.repeat(-1+1j, 100)
+    tmp = np.concatenate((mm, pm, pp, pm, mm, mp, mm, pp))
+    arr1 = np.tile(tmp, 20)
+    arr1 = np.insert(arr1, 0, np.zeros(5000))
+    arr1 = np.append(arr1, np.zeros(5000))
+    encode(arr1, fname)
