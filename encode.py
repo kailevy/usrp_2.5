@@ -1,6 +1,27 @@
 import numpy as np
 # import matplotlib.pyplot as plt
 
+def encode_string(input_string):
+    quad_arr = []
+    for char in input_string:
+        for i in [3,2,1,0]:
+            # Right shift by the right amount and mask off last 2 bits
+            quad_arr.append( (ord(char) >> 2 * i) & 0x03 )
+    return quad_arr
+
+def decode_string(quad_arr):
+    if len(quad_arr) % 4 != 0: return 'ERR'
+    idx = 0
+    curr_ord = 0
+    output_string = ''
+    while idx < len(quad_arr):
+        for i in [3,2,1,0]:
+            curr_ord += quad_arr[idx+i] << 2*i
+            idx += 1
+        output_string += (chr(curr_ord))
+        curr_ord = 0
+    return output_string
+
 def encode(sig, fname):
     tmp = np.zeros(2*len(sig), dtype='float32')
     tmp[::2] = np.real(sig)
@@ -26,3 +47,7 @@ if __name__ == '__main__':
     arr1 = np.concatenate((np.zeros(5000), header, np.zeros(1000), arr1))
     arr1 = np.append(arr1, np.zeros(5000))
     encode(arr1, fname)
+
+    q_arr = encode_string('Hello, World!')
+    print('q_arr ' +str(q_arr))
+    print(decode_string(q_arr))
