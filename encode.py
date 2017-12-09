@@ -7,13 +7,11 @@ PM = np.repeat(1-1j, 100)
 MP = np.repeat(-1+1j, 100)
 BITS = np.array([MM, MP, PM, PP])
 
-def generate_white_noise():
+def generate_white_noise(std=5, samples=5000, seed=4):
     mean = 0
-    std = 1 
-    num_samples = 1000
-    np.random.seed(4)
-    samples = np.random.normal(mean, std, size=num_samples)
-    return samples
+    np.random.seed(seed)
+    samples = np.random.normal(mean, std, size=samples)
+    return samples+1j*samples
 
 
 def make_pulse(data):
@@ -26,6 +24,7 @@ def encode(sig, fname):
     tmp[::2] = np.real(sig)
     tmp[1::2] = np.imag(sig)
     tmp.tofile(fname)
+    return tmp
 
 
 if __name__ == '__main__':
@@ -35,11 +34,11 @@ if __name__ == '__main__':
     # header = np.array([3, 0, 0, 3, 3, 0, 2, 0, 2, 3, 3, 1, 2, 3, 1, 1, 1, 3, 3, 3, 2, 2, 3,
     #    1, 2, 0, 1, 0, 2, 2, 1, 1])
     # header = make_pulse(header)
-    noise_header = generate_white_noise()
+    noise_header4 = generate_white_noise(seed=4)
+    noise_footer5 = generate_white_noise(seed=5)
     tmp = make_pulse(np.array([1,2,3,2,0,1,0,3]))
     arr1 = np.tile(tmp, 20)
-    arr1 = np.concatenate((np.zeros(5000), noise_header, np.zeros(5000), arr1))
-    arr1 = np.append(arr1, np.zeros(5000))
-    encode(arr1, fname)
-    plt.plot(arr1)
+    arr1 = np.concatenate((np.zeros(5000), noise_header4, np.zeros(100), arr1, np.zeros(100), noise_footer5))
+    signal = encode(arr1, fname)
+    plt.plot(signal)
     plt.show()
