@@ -132,7 +132,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>/home/jwb/bits.txt</value>
+      <value>./rx_bits.txt</value>
     </param>
     <param>
       <key>_coordinate</key>
