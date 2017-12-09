@@ -15,6 +15,7 @@ def generate_white_noise(std=5, samples=5000, seed=4):
 
 
 def make_pulse(data):
+    data = np.array(data)
     signal = BITS[data]
     signal = signal.flatten()
     return signal
@@ -33,12 +34,17 @@ if __name__ == '__main__':
     # not really but 0b01110001 and 0b00100101
     # header = np.array([3, 0, 0, 3, 3, 0, 2, 0, 2, 3, 3, 1, 2, 3, 1, 1, 1, 3, 3, 3, 2, 2, 3,
     #    1, 2, 0, 1, 0, 2, 2, 1, 1])
-    # header = make_pulse(header)
+    header = [0, 3, 1, 2]
+    header_pulse = make_pulse(header)
     noise_header4 = generate_white_noise(seed=4)
     noise_footer5 = generate_white_noise(seed=5)
-    tmp = make_pulse(np.array([1,2,3,2,0,1,0,3]))
+    tx = [1,2,3,2,0,1,0,3]
+    tmp = make_pulse(tx)
     arr1 = np.tile(tmp, 20)
-    arr1 = np.concatenate((np.zeros(5000), noise_header4, np.zeros(100), arr1, np.zeros(100), noise_footer5))
+    arr1 = np.concatenate((np.zeros(5000), noise_header4, np.zeros(500), header_pulse, np.zeros(500), arr1, np.zeros(500), noise_footer5))
     signal = encode(arr1, fname)
-    plt.plot(signal)
-    plt.show()
+    # plt.plot(signal)
+    # plt.show()
+
+    expected = [-1] * 5 + header + [-1] * 5 + tx*20 + [-1] * 5
+    print expected
