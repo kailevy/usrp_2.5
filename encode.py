@@ -131,10 +131,19 @@ if __name__ == '__main__':
         arr1 = np.concatenate((np.zeros(50*pulse_length), noise_header4, header_pulse, tx_data, noise_footer5))
         signal = encode(arr1, fname)
 
-        rx = np.array(decode_bit_stream(tx))
+        tx[10] = 0
+        tx = tx[0:21]
+        rx = np.array(decode_bit_stream(tx)).flatten()
+        # print(H.shape)
+        print('rx', rx)
+        print(len(rx))
+        print(np.reshape(rx, (7,-1)).shape)
         errors = hamming_error_check(rx)
-        err_tmp = calcerror(errors)
-        rx_corrected = hamming_correct(rx, err_tmp)
+        print('e', errors)
+        err_tmp = calcerror(errors).flatten()
+        print(err_tmp)
+        rx_corrected = hamming_correct(rx, err_tmp).flatten()
+        print('correct', rx_corrected)
         bits_decode = hamming_decode(rx_corrected).flatten()
         print(frombits(bits_decode))
 
