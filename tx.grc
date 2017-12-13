@@ -105,7 +105,7 @@
     </param>
     <param>
       <key>value</key>
-      <value>22050</value>
+      <value>1e6</value>
     </param>
   </block>
   <block>
@@ -128,7 +128,7 @@
     </param>
     <param>
       <key>file</key>
-      <value>/home/klevy/Documents/Olin/4/AnalDig/usrp_2.5/send.dat</value>
+      <value>/home/aehoppe/Documents/ADC/usrp_2.5/send.dat</value>
     </param>
     <param>
       <key>_coordinate</key>
@@ -156,7 +156,7 @@
     </param>
     <param>
       <key>repeat</key>
-      <value>True</value>
+      <value>False</value>
     </param>
     <param>
       <key>vlen</key>
@@ -827,7 +827,7 @@
     </param>
     <param>
       <key>dev_args</key>
-      <value>"name=hasfeet"</value>
+      <value>"name=nofeet"</value>
     </param>
     <param>
       <key>_enabled</key>

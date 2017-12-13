@@ -1,11 +1,37 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-PP = np.repeat(1+1j, 100)
-MM = np.repeat(-1-1j, 100)
-PM = np.repeat(1-1j, 100)
-MP = np.repeat(-1+1j, 100)
+pulse_length = 5
+
+PP = np.repeat(1+1j, pulse_length)
+MM = np.repeat(-1-1j, pulse_length)
+PM = np.repeat(1-1j, pulse_length)
+MP = np.repeat(-1+1j, pulse_length)
 BITS = np.array([MM, MP, PM, PP])
+
+# Take in a string and construct an array of values 0-3 which represent 2-bit QAM encodings
+def encode_string(input_string):
+    quad_arr = []
+    for char in input_string:
+        for i in [3,2,1,0]:
+            # Right shift by the right amount and mask off last 2 bits
+            quad_arr.append( (ord(char) >> 2 * i) & 0x03 )
+    return quad_arr
+
+# Take an array of 0-3 QAM values and reconstruct a string
+def decode_string(quad_arr):
+    if len(quad_arr) % 4 != 0: return 'ERR'
+    idx = 0
+    curr_ord = 0
+    output_string = ''
+    shift = 0
+    for symbol in quad_arr:
+        curr_ord += symbol << (3-shift)*2
+        shift = (shift + 1) % 4
+        if shift == 0:
+            output_string += (chr(curr_ord))
+            curr_ord = 0
+    return output_string
 
 def generate_white_noise(std=5, samples=5000, seed=4):
     mean = 0
@@ -38,13 +64,22 @@ if __name__ == '__main__':
     header_pulse = make_pulse(header)
     noise_header4 = generate_white_noise(seed=4)
     noise_footer5 = generate_white_noise(seed=5)
-    tx = [1,2,3,2,0,1,0,3]
-    tmp = make_pulse(tx)
-    arr1 = np.tile(tmp, 20)
-    arr1 = np.concatenate((np.zeros(5000), noise_header4, np.zeros(500), header_pulse, np.zeros(500), arr1, np.zeros(500), noise_footer5))
-    signal = encode(arr1, fname)
-    # plt.plot(signal)
-    # plt.show()
 
-    expected = [-1] * 5 + header + [-1] * 5 + tx*20 + [-1] * 5
-    print expected
+
+
+    tx = encode_string('abcdefghijklmnopqrstuvwxyz')
+    tx_data = make_pulse(tx)
+    arr1 = np.concatenate((np.zeros(50*pulse_length), noise_header4, header_pulse, tx_data, noise_footer5))
+    signal = encode(arr1, fname)
+
+    expected = header + tx
+    # print expected
+    # print len(expected)
+    # print('num_samples:' + str(len(arr1)/pulse_length))
+
+    with open('gb_addr.txt', 'r') as infile:
+        gb_addr = ''.join(infile.readlines())
+
+        print gb_addr
+        print encode_string(gb_addr)
+        print decode_string(encode_string(gb_addr))
