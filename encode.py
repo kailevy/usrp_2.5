@@ -24,8 +24,32 @@ def encode_byte_list(input_list):
     for byte in input_string:
         for i in [3,2,1,0]:
             # Right shift by the right amount and mask off last 2 bits
-            quad_arr.append( byte >> 2 * i) & 0x03 )
+            quad_arr.append( (byte >> (2 * i)) & 0x03 )
     return quad_arr
+
+# Takes in a flattened list of bits and maps them to pulses
+def encode_bit_stream(bit_list):
+    if (len(bit_list) % 2 > 0):
+        bit_list.append('0')
+    i = 0
+    quad_arr = []
+    while i < len(bit_list):
+        symbol = (int(bit_list[i])<<1) + (int(bit_list[i+1]))
+        quad_arr.append(symbol)
+        i += 2
+    return quad_arr
+
+# Takes in a list of MSB-first QAM values and reconstructs a bit list
+def decode_bit_stream(quad_arr):
+    padded = False
+    bit_list = []
+    if (len(quad_arr) * 2) % 7 == 1:
+        padded = True
+    for symbol in quad_arr:
+        bit_list += [symbol >> 1, symbol & 1]
+    if padded:
+        bit_list = bit_list[:-1]
+    return bit_list
 
 # Take an array of 0-3 QAM values and reconstruct a string
 def decode_string(quad_arr):
@@ -56,6 +80,7 @@ def decode_byte_list(quad_arr):
             output_list.append(curr_byte)
             curr_byte = 0
     return output_list
+
 
 def generate_white_noise(std=5, samples=5000, seed=4):
     mean = 0
@@ -96,13 +121,18 @@ if __name__ == '__main__':
         arr1 = np.concatenate((np.zeros(50*pulse_length), noise_header4, header_pulse, tx_data, noise_footer5))
         signal = encode(arr1, fname)
 
-        expected = header + tx
-        print(expected)
-        print(len(expected))
-        print('num_samples:' + str(len(arr1)/pulse_length))
+        # expected = header + tx
+        # print(expected)
+        # print(len(expected))
+        # print('num_samples:' + str(len(arr1)/pulse_length))
 
-    #     gb_addr = ''.join(infile.readlines())
-    #
-    #     print(gb_addr)
-    #     print(encode_string(gb_addr))
-    #     print(decode_string(encode_string(gb_addr)))
+
+        # gb_addr = ''.join(infile.readlines())
+        # print(gb_addr)
+        # print(encode_string(gb_addr))
+        # print(decode_string(encode_string(gb_addr)))
+
+        # in_bits = [0, 1, 1, 0, 1, 0, 1]
+        # print(in_bits)
+        # print(encode_bit_stream(in_bits))
+        # print(decode_bit_stream(encode_bit_stream(in_bits)))
