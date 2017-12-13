@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from hamming import *
+from bits import *
 
 pulse_length = 5
 
@@ -116,10 +118,26 @@ if __name__ == '__main__':
 
 
     with open('gb_addr.txt', 'r') as infile:
-        tx = encode_string(''.join(infile.readlines()))
+        gb_addr = ''.join(infile.readlines())
+        gb_bits = tobits(gb_addr)
+        print('bit length   : ' + str(len(gb_bits)))
+        hamming_bits = hamming_encode(gb_bits).flatten()
+        print('hamming(4,7) : ' + str(len(hamming_bits)))
+        print('Ratio        : ' + str(len(gb_bits)/len(hamming_bits)))
+        print('4/7          : ' + str(4/7))
+        tx = encode_bit_stream(hamming_encode(tobits(gb_addr)).flatten())
+        print('QAM symbols  : ' + str(len(tx)))
         tx_data = make_pulse(tx)
         arr1 = np.concatenate((np.zeros(50*pulse_length), noise_header4, header_pulse, tx_data, noise_footer5))
         signal = encode(arr1, fname)
+
+        rx = np.array(decode_bit_stream(tx))
+        errors = hamming_error_check(rx)
+        err_tmp = calcerror(errors)
+        rx_corrected = hamming_correct(rx, err_tmp)
+        bits_decode = hamming_decode(rx_corrected).flatten()
+        print(frombits(bits_decode))
+
 
         # expected = header + tx
         # print(expected)

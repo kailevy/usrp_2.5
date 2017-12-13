@@ -34,7 +34,7 @@ def hamming_error_check(bits):
     return errors.transpose()
 
 def calcerror(arr):
-    return np.packbits(errors, axis=1) >> 5
+    return np.packbits(arr, axis=1) >> 5
 
 def hamming_correct(res, errs):
     arr = np.zeros((len(errs),7))
@@ -48,4 +48,3 @@ def hamming_decode(bits):
     bits_reshaped = np.reshape(bits, (-1, 7)).transpose()
     decoded = np.dot(R, bits_reshaped)
     return decoded.transpose()
-    
