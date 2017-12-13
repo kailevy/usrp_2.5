@@ -80,6 +80,6 @@ if __name__ == '__main__':
     with open('gb_addr.txt', 'r') as infile:
         gb_addr = ''.join(infile.readlines())
 
-        print gb_addr
-        print encode_string(gb_addr)
-        print decode_string(encode_string(gb_addr))
+        print(gb_addr)
+        print(encode_string(gb_addr))
+        print(decode_string(encode_string(gb_addr)))
