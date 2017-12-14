@@ -39,13 +39,14 @@ def calcerror(arr):
 
 def hamming_correct(res, errs):
     arr = np.zeros((len(errs),7))
-    resh = res.reshape(-1,7)
+    resh = np.copy(np.reshape(res, (-1,7)))
     print(resh)
     for i,e in enumerate(errs):
         if e > 0:
-            print('bit', e)
-            print(resh[i])
-            resh[i,8-e] = 1-resh[i,8-e]
+            # print('bit', e)
+            # print(resh[i])
+            resh[i,e-1] = 1-resh[i,e-1]
+            # print(resh[i])
     return resh
 
 def hamming_decode(bits):
