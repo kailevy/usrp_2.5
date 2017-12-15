@@ -31,22 +31,18 @@ def hamming_encode(bits):
 def hamming_error_check(bits):
     bits_reshaped = np.reshape(bits, (-1, 7)).transpose()
     errors = np.dot(H,bits_reshaped)%2
-    return errors.transpose()
+    # we flip this because it's in little endian for some reason but we want big endian
+    return errors.transpose().fliplr()
 
 def calcerror(arr):
-    # arr = np.reshape()
     return np.packbits(arr, axis=1) >> 5
 
 def hamming_correct(res, errs):
     arr = np.zeros((len(errs),7))
     resh = np.copy(np.reshape(res, (-1,7)))
-    print(resh)
     for i,e in enumerate(errs):
         if e > 0:
-            # print('bit', e)
-            # print(resh[i])
             resh[i,e-1] = 1-resh[i,e-1]
-            # print(resh[i])
     return resh
 
 def hamming_decode(bits):
